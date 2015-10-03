@@ -278,7 +278,7 @@ class EGVRecord(GenericTimestampedRecord):
   # uint, uint, ushort, byte, ushort
   # (system_seconds, display_seconds, glucose, trend_arrow, crc)
   FIELDS = ['glucose', 'trend_arrow']
-  FORMAT = '<2IHcH'
+  FORMAT = '<2IHBBBBBBBBBcBH'
 
   @property
   def full_glucose(self):
@@ -286,7 +286,7 @@ class EGVRecord(GenericTimestampedRecord):
 
   @property
   def full_trend(self):
-    return self.data[3]
+    return self.data[12]
 
   @property
   def display_only(self):
