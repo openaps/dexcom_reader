@@ -95,7 +95,7 @@ class InsertionRecord(GenericTimestampedRecord):
 
   @property
   def insertion_time(self):
-    if self.data[2] is 0xFFFFFFFF:
+    if self.data[2] == 0xFFFFFFFF:
       return self.system_time
     return util.ReceiverTimeToTime(self.data[2])
 
