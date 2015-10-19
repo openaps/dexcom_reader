@@ -91,7 +91,7 @@ class GenericXMLRecord(GenericTimestampedRecord):
 
 class InsertionRecord(GenericTimestampedRecord):
   FIELDS = ['insertion_time', 'session_state']
-  FORMAT = '<3IcH'
+  FORMAT = '<3Ic10BH'
 
   @property
   def insertion_time(self):
@@ -205,7 +205,7 @@ class SubCal (GenericTimestampedRecord):
     return util.ReceiverTimeToTime(self.data[3])
 
 class MeterRecord(GenericTimestampedRecord):
-  FORMAT = '<2IHIH'
+  FORMAT = '<2IHI5BH'
   FIELDS = ['meter_glucose', 'meter_time' ]
 
   @property
