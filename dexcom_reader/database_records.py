@@ -103,7 +103,9 @@ class InsertionRecord(GenericTimestampedRecord):
   def session_state(self):
     states = [None, 'REMOVED', 'EXPIRED', 'RESIDUAL_DEVIATION',
               'COUNTS_DEVIATION', 'SECOND_SESSION', 'OFF_TIME_LOSS',
-              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE']
+              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE',
+              'UNKNOWN1', 'UNKNOWN2', 'UNKNOWN3', 'UNKNOWN4', 'UNKNOWN5',
+              'UNKNOWN6', 'UNKNOWN7', 'UNKNOWN8']
     return states[ord(self.data[3])]
 
   def __repr__(self):
