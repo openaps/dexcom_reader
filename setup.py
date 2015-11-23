@@ -18,7 +18,7 @@ setup(name='dexcom_reader',
     author_email="compbrain+dexcom_reader@gmail.com",
     maintainer="Ben West",
     maintainer_email="bewest+dexcom_reader@gmail.com",
-    url="https://github.com/compbrain/dexcom_reader",
+    url="https://github.com/openaps/dexcom_reader",
     packages=find_packages( ),
     install_requires = [
       'pyserial'
