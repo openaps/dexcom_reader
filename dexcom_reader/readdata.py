@@ -249,16 +249,23 @@ class Dexcom(object):
   def iter_records (self, record_type):
     assert record_type in constants.RECORD_TYPES
     page_range = self.ReadDatabasePageRange(record_type)
-    for x in xrange(page_range[1], page_range[0] or 1, -1):
+    start, end = page_range
+    if start != end or not end:
+      end += 1
+    for x in reversed(xrange(start, end)):
       records = list(self.ReadDatabasePage(record_type, x))
       records.reverse( )
       for record in records:
         yield record
+  
   def ReadRecords(self, record_type):
     records = []
     assert record_type in constants.RECORD_TYPES
     page_range = self.ReadDatabasePageRange(record_type)
-    for x in range(page_range[0], page_range[1] or 1):
+    start, end = page_range
+    if start != end or not end:
+      end += 1
+    for x in range(start, end):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
 
