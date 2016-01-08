@@ -186,16 +186,6 @@ class SensorRecord(GenericTimestampedRecord):
   def rssi(self):
     return self.data[4]
 
-  """
-  def to_dict (self):
-    return dict(display_time=self.display_time.isoformat( )
-      , system_time=self.system_time.isoformat( )
-      , unfiltered=self.unfiltered
-      , filtered=self.filtered
-      , rssi=self.rssi
-      )
-  """
-
 
 class EGVRecord(GenericTimestampedRecord):
   # uint, uint, ushort, byte, ushort
