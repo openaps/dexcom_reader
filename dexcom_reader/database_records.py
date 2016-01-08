@@ -171,7 +171,7 @@ class EventRecord(GenericTimestampedRecord):
 class SensorRecord(GenericTimestampedRecord):
   # uint, uint, uint, uint, ushort
   # (system_seconds, display_seconds, unfiltered, filtered, rssi, crc)
-  FORMAT = '<2IIIHH'
+  FORMAT = '<2IIIhH'
   # (unfiltered, filtered, rssi)
   FIELDS = ['unfiltered', 'filtered', 'rssi']
   @property
@@ -184,7 +184,7 @@ class SensorRecord(GenericTimestampedRecord):
 
   @property
   def rssi(self):
-    return self.data[3]
+    return self.data[4]
 
   """
   def to_dict (self):
