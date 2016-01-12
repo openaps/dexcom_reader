@@ -137,6 +137,7 @@ class MeterRecord(GenericTimestampedRecord):
 class EventRecord(GenericTimestampedRecord):
   # sys_time,display_time,glucose,meter_time,crc
   FORMAT = '<2I2c2IH'
+  FIELDS = ['event_type', 'event_sub_type', 'event_value' ]
 
   @property
   def event_type(self):
