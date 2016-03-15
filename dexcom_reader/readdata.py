@@ -172,7 +172,26 @@ class Dexcom(object):
     return CLOCK_MODE[ord(cm[0])]
 
   def ReadDeviceMode(self):
+    # ???
     return self.GenericReadCommand(constants.READ_DEVICE_MODE).data
+
+  def ReadBlindedMode(self):
+    MODES = { 0: False }
+    raw = self.GenericReadCommand(constants.READ_BLINDED_MODE).data
+    mode = MODES.get(bytearray(raw)[0], True)
+    return mode
+
+  def ReadHardwareBoardId(self):
+    return self.GenericReadCommand(constants.READ_HARDWARE_BOARD_ID).data
+
+  def ReadEnableSetupWizardFlag (self):
+    # ???
+    return self.GenericReadCommand(constants.READ_ENABLE_SETUP_WIZARD_FLAG).data
+
+  def ReadSetupWizardState (self):
+    # ???
+    return self.GenericReadCommand(constants.READ_SETUP_WIZARD_STATE).data
+
 
   def ReadManufacturingData(self):
     data = self.ReadRecords('MANUFACTURING_DATA')[0].xmldata
