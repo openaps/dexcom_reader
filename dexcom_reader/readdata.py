@@ -151,12 +151,19 @@ class Dexcom(object):
     return util.ReceiverTimeToTime(struct.unpack('I', rtc)[0])
 
   def ReadSystemTimeOffset(self):
-    rtc = self.GenericReadCommand(constants.READ_SYSTEM_TIME_OFFSET).data
-    return datetime.timedelta(seconds=struct.unpack('i', rtc)[0])
+    raw = self.GenericReadCommand(constants.READ_SYSTEM_TIME_OFFSET).data
+    return datetime.timedelta(seconds=struct.unpack('i', raw)[0])
 
   def ReadDisplayTimeOffset(self):
-    rtc = self.GenericReadCommand(constants.READ_DISPLAY_TIME_OFFSET).data
-    return datetime.timedelta(seconds=struct.unpack('i', rtc)[0])
+    raw = self.GenericReadCommand(constants.READ_DISPLAY_TIME_OFFSET).data
+    return datetime.timedelta(seconds=struct.unpack('i', raw)[0])
+
+  def WriteDisplayTimeOffset(self, offset=None):
+    payload = struct.pack('i', offset)
+    self.WriteCommand(constants.WRITE_DISPLAY_TIME_OFFSET, payload)
+    packet = self.readpacket()
+    return dict(ACK=ord(packet.command) == constants.ACK)
+
 
   def ReadDisplayTime(self):
     return self.ReadSystemTime() + self.ReadDisplayTimeOffset()
