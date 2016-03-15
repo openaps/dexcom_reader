@@ -192,6 +192,11 @@ class Dexcom(object):
     # ???
     return self.GenericReadCommand(constants.READ_SETUP_WIZARD_STATE).data
 
+  def ReadChargerCurrentSetting (self):
+    MAP = ( 'Unknown', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
+    raw = bytearray(self.GenericReadCommand(constants.READ_CHARGER_CURRENT_SETTING).data)
+    return MAP[raw[0]]
+
 
   def ReadManufacturingData(self):
     data = self.ReadRecords('MANUFACTURING_DATA')[0].xmldata
