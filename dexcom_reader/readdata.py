@@ -199,8 +199,16 @@ class Dexcom(object):
     # ???
     return self.GenericReadCommand(constants.READ_SETUP_WIZARD_STATE).data
 
+  def WriteChargerCurrentSetting (self, status):
+    MAP = ( 'Off', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
+    payload = str(bytearray([MAP.index(status)]))
+    self.WriteCommand(constants.WRITE_CHARGER_CURRENT_SETTING, payload)
+    packet = self.readpacket()
+    raw = bytearray(packet.data)
+    return dict(ACK=ord(packet.command) == constants.ACK, raw=list(raw))
+
   def ReadChargerCurrentSetting (self):
-    MAP = ( 'Unknown', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
+    MAP = ( 'Off', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
     raw = bytearray(self.GenericReadCommand(constants.READ_CHARGER_CURRENT_SETTING).data)
     return MAP[raw[0]]
 
