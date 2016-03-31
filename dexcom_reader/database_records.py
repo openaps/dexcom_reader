@@ -137,6 +137,7 @@ class MeterRecord(GenericTimestampedRecord):
 class EventRecord(GenericTimestampedRecord):
   # sys_time,display_time,glucose,meter_time,crc
   FORMAT = '<2I2c2IH'
+  FIELDS = ['event_type', 'event_sub_type', 'event_value' ]
 
   @property
   def event_type(self):
@@ -171,7 +172,7 @@ class EventRecord(GenericTimestampedRecord):
 class SensorRecord(GenericTimestampedRecord):
   # uint, uint, uint, uint, ushort
   # (system_seconds, display_seconds, unfiltered, filtered, rssi, crc)
-  FORMAT = '<2IIIHH'
+  FORMAT = '<2IIIhH'
   # (unfiltered, filtered, rssi)
   FIELDS = ['unfiltered', 'filtered', 'rssi']
   @property
@@ -184,17 +185,7 @@ class SensorRecord(GenericTimestampedRecord):
 
   @property
   def rssi(self):
-    return self.data[3]
-
-  """
-  def to_dict (self):
-    return dict(display_time=self.display_time.isoformat( )
-      , system_time=self.system_time.isoformat( )
-      , unfiltered=self.unfiltered
-      , filtered=self.filtered
-      , rssi=self.rssi
-      )
-  """
+    return self.data[4]
 
 
 class EGVRecord(GenericTimestampedRecord):

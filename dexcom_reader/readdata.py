@@ -151,12 +151,19 @@ class Dexcom(object):
     return util.ReceiverTimeToTime(struct.unpack('I', rtc)[0])
 
   def ReadSystemTimeOffset(self):
-    rtc = self.GenericReadCommand(constants.READ_SYSTEM_TIME_OFFSET).data
-    return datetime.timedelta(seconds=struct.unpack('i', rtc)[0])
+    raw = self.GenericReadCommand(constants.READ_SYSTEM_TIME_OFFSET).data
+    return datetime.timedelta(seconds=struct.unpack('i', raw)[0])
 
   def ReadDisplayTimeOffset(self):
-    rtc = self.GenericReadCommand(constants.READ_DISPLAY_TIME_OFFSET).data
-    return datetime.timedelta(seconds=struct.unpack('i', rtc)[0])
+    raw = self.GenericReadCommand(constants.READ_DISPLAY_TIME_OFFSET).data
+    return datetime.timedelta(seconds=struct.unpack('i', raw)[0])
+
+  def WriteDisplayTimeOffset(self, offset=None):
+    payload = struct.pack('i', offset)
+    self.WriteCommand(constants.WRITE_DISPLAY_TIME_OFFSET, payload)
+    packet = self.readpacket()
+    return dict(ACK=ord(packet.command) == constants.ACK)
+
 
   def ReadDisplayTime(self):
     return self.ReadSystemTime() + self.ReadDisplayTimeOffset()
@@ -172,7 +179,39 @@ class Dexcom(object):
     return CLOCK_MODE[ord(cm[0])]
 
   def ReadDeviceMode(self):
+    # ???
     return self.GenericReadCommand(constants.READ_DEVICE_MODE).data
+
+  def ReadBlindedMode(self):
+    MODES = { 0: False }
+    raw = self.GenericReadCommand(constants.READ_BLINDED_MODE).data
+    mode = MODES.get(bytearray(raw)[0], True)
+    return mode
+
+  def ReadHardwareBoardId(self):
+    return self.GenericReadCommand(constants.READ_HARDWARE_BOARD_ID).data
+
+  def ReadEnableSetupWizardFlag (self):
+    # ???
+    return self.GenericReadCommand(constants.READ_ENABLE_SETUP_WIZARD_FLAG).data
+
+  def ReadSetupWizardState (self):
+    # ???
+    return self.GenericReadCommand(constants.READ_SETUP_WIZARD_STATE).data
+
+  def WriteChargerCurrentSetting (self, status):
+    MAP = ( 'Off', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
+    payload = str(bytearray([MAP.index(status)]))
+    self.WriteCommand(constants.WRITE_CHARGER_CURRENT_SETTING, payload)
+    packet = self.readpacket()
+    raw = bytearray(packet.data)
+    return dict(ACK=ord(packet.command) == constants.ACK, raw=list(raw))
+
+  def ReadChargerCurrentSetting (self):
+    MAP = ( 'Off', 'Power100mA', 'Power500mA', 'PowerMax', 'PowerSuspended' )
+    raw = bytearray(self.GenericReadCommand(constants.READ_CHARGER_CURRENT_SETTING).data)
+    return MAP[raw[0]]
+
 
   def ReadManufacturingData(self):
     data = self.ReadRecords('MANUFACTURING_DATA')[0].xmldata
