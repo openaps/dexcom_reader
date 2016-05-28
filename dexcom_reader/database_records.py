@@ -111,12 +111,98 @@ class InsertionRecord(GenericTimestampedRecord):
 
 
 class Calibration(GenericTimestampedRecord):
+  FORMAT = '<2Iddd3cdb'
+  # CAL_FORMAT = '<2Iddd3cdb'
+  FIELDS = [ 'slope', 'intercept', 'scale', 'decay', 'numsub', 'raw' ]
   @property
-  def raw(self):
-    return binascii.hexlify(bytearray(self.data))
+  def raw (self):
+    return binascii.hexlify(self.raw_data)
+  @property
+  def slope  (self):
+    return self.data[2]
+  @property
+  def intercept  (self):
+    return self.data[3]
+  @property
+  def scale (self):
+    return self.data[4]
+  @property
+  def decay (self):
+    return self.data[8]
+  @property
+  def numsub (self):
+    return int(self.data[9])
 
   def __repr__(self):
     return '%s: CAL SET:%s' % (self.display_time, self.raw)
+
+  LEGACY_SIZE = 148
+  REV_2_SIZE = 249
+  @classmethod
+  def _ClassSize(cls):
+
+    return cls.REV_2_SIZE
+
+  @classmethod
+  def Create(cls, data, record_counter):
+    offset = record_counter * cls._ClassSize()
+    cal_size = struct.calcsize(cls.FORMAT)
+    raw_data = data[offset:offset + cls._ClassSize()]
+
+    cal_data = data[offset:offset + cal_size]
+    unpacked_data = cls._ClassFormat().unpack(cal_data)
+    return cls(unpacked_data, raw_data)
+
+  def __init__ (self, data, raw_data):
+    self.page_data = raw_data
+    self.raw_data = raw_data
+    self.data = data
+    subsize = struct.calcsize(SubCal.FORMAT)
+    offset = self.numsub * subsize
+    calsize = struct.calcsize(self.FORMAT)
+    caldata = raw_data[:calsize]
+    subdata = raw_data[calsize:calsize + offset]
+    crcdata = raw_data[calsize+offset:calsize+offset+2]
+
+    subcals = [ ]
+    for i in xrange(self.numsub):
+      offset = i * subsize
+      raw_sub = subdata[offset:offset+subsize]
+      sub = SubCal(raw_sub, self.data[1])
+      subcals.append(sub)
+
+    self.subcals = subcals
+
+    self.check_crc()
+  def to_dict (self):
+    res = super(Calibration, self).to_dict( )
+    res['subrecords'] = [ sub.to_dict( ) for sub in  self.subcals ]
+    return res
+  @property
+  def crc(self):
+    return struct.unpack('H', self.raw_data[-2:])[0]
+
+
+class SubCal (GenericTimestampedRecord):
+  FORMAT = '<IIIIc'
+  BASE_FIELDS = [ ]
+  FIELDS = [ 'entered', 'meter',  'sensor', 'applied', ]
+  def __init__ (self, raw_data, displayOffset=None):
+    self.raw_data = raw_data
+    self.data = self._ClassFormat().unpack(raw_data)
+    self.displayOffset = displayOffset
+  @property
+  def entered  (self):
+    return util.ReceiverTimeToTime(self.data[0])
+  @property
+  def meter  (self):
+    return int(self.data[1])
+  @property
+  def sensor  (self):
+    return int(self.data[2])
+  @property
+  def applied  (self):
+    return util.ReceiverTimeToTime(self.data[3])
 
 class MeterRecord(GenericTimestampedRecord):
   FORMAT = '<2IHIH'

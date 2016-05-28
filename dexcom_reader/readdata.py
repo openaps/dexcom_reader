@@ -251,7 +251,7 @@ class Dexcom(object):
     assert ord(packet.command) == 1
     # first index (uint), numrec (uint), record_type (byte), revision (byte),
     # page# (uint), r1 (uint), r2 (uint), r3 (uint), ushort (Crc)
-    header_format = '<2I2c4IH'
+    header_format = '<2IcB4IH'
     header_data_len = struct.calcsize(header_format)
     header = struct.unpack_from(header_format, packet.data)
     header_crc = crc16.crc16(packet.data[:header_data_len-2])
@@ -268,9 +268,11 @@ class Dexcom(object):
 
   def ParsePage(self, header, data):
     record_type = constants.RECORD_TYPES[ord(header[2])]
+    revision = int(header[3])
     generic_parser_map = {
       'USER_EVENT_DATA': database_records.EventRecord,
       'METER_DATA': database_records.MeterRecord,
+      'CAL_SET': database_records.Calibration,
       'INSERTION_TIME': database_records.InsertionRecord,
       'EGV_DATA': database_records.EGVRecord,
       'SENSOR_DATA': database_records.SensorRecord,
