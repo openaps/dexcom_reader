@@ -103,12 +103,16 @@ class InsertionRecord(GenericTimestampedRecord):
   def session_state(self):
     states = [None, 'REMOVED', 'EXPIRED', 'RESIDUAL_DEVIATION',
               'COUNTS_DEVIATION', 'SECOND_SESSION', 'OFF_TIME_LOSS',
-              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE']
+              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE',
+              'UNKNOWN1', 'UNKNOWN2', 'UNKNOWN3', 'UNKNOWN4', 'UNKNOWN5',
+              'UNKNOWN6', 'UNKNOWN7', 'UNKNOWN8']
     return states[ord(self.data[3])]
 
   def __repr__(self):
     return '%s:  state=%s' % (self.display_time, self.session_state)
 
+class G5InsertionRecord (InsertionRecord):
+  FORMAT = '<3Ic10BH'
 
 class Calibration(GenericTimestampedRecord):
   FORMAT = '<2Iddd3cdb'
@@ -182,6 +186,12 @@ class Calibration(GenericTimestampedRecord):
   def crc(self):
     return struct.unpack('H', self.raw_data[-2:])[0]
 
+class LegacyCalibration (Calibration):
+  @classmethod
+  def _ClassSize(cls):
+
+    return cls.LEGACY_SIZE
+
 
 class SubCal (GenericTimestampedRecord):
   FORMAT = '<IIIIc'
@@ -219,6 +229,8 @@ class MeterRecord(GenericTimestampedRecord):
   def __repr__(self):
     return '%s: Meter BG:%s' % (self.display_time, self.meter_glucose)
 
+class G5MeterRecord (MeterRecord):
+  FORMAT = '<2IHI5BH'
 
 class EventRecord(GenericTimestampedRecord):
   # sys_time,display_time,glucose,meter_time,crc
@@ -316,3 +328,11 @@ class EGVRecord(GenericTimestampedRecord):
     else:
       return '%s: CGM BG:%s (%s) DO:%s' % (self.display_time, self.glucose,
                                            self.trend_arrow, self.display_only)
+
+class G5EGVRecord (EGVRecord):
+  FORMAT = '<2IHBBBBBBBBBcBH'
+  @property
+  def full_trend(self):
+    return self.data[12]
+
+

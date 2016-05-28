@@ -266,17 +266,21 @@ class Dexcom(object):
     for x in xrange(header[1]):
       yield record_type.Create(data, x)
 
-  def ParsePage(self, header, data):
-    record_type = constants.RECORD_TYPES[ord(header[2])]
-    revision = int(header[3])
-    generic_parser_map = {
+  PARSER_MAP = {
       'USER_EVENT_DATA': database_records.EventRecord,
       'METER_DATA': database_records.MeterRecord,
       'CAL_SET': database_records.Calibration,
+      # 'CAL_SET': database_records.Calibration,
       'INSERTION_TIME': database_records.InsertionRecord,
       'EGV_DATA': database_records.EGVRecord,
       'SENSOR_DATA': database_records.SensorRecord,
     }
+  def ParsePage(self, header, data):
+    record_type = constants.RECORD_TYPES[ord(header[2])]
+    revision = int(header[3])
+    generic_parser_map = self.PARSER_MAP
+    if revision < 2 and record_type == 'CAL_SET':
+      generic_parser_map.update(CAL_SET=database_records.LegacyCalibration)
     xml_parsed = ['PC_SOFTWARE_PARAMETER', 'MANUFACTURING_DATA']
     if record_type in generic_parser_map:
       return self.GenericRecordYielder(header, data,
@@ -310,6 +314,20 @@ class Dexcom(object):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
 
+class DexcomG5 (Dexcom):
+  PARSER_MAP = {
+      'USER_EVENT_DATA': database_records.EventRecord,
+      'METER_DATA': database_records.G5MeterRecord,
+      'CAL_SET': database_records.Calibration,
+      'INSERTION_TIME': database_records.G5InsertionRecord,
+      'EGV_DATA': database_records.G5EGVRecord,
+      'SENSOR_DATA': database_records.SensorRecord,
+    }
+
+def GetDevice (port, G5=False):
+  if G5:
+    return DexcomG5(port)
+  return Dexcom(port)
 
 if __name__ == '__main__':
   Dexcom.LocateAndDownload()
