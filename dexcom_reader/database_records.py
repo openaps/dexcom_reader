@@ -91,7 +91,7 @@ class GenericXMLRecord(GenericTimestampedRecord):
 
 class InsertionRecord(GenericTimestampedRecord):
   FIELDS = ['insertion_time', 'session_state']
-  FORMAT = '<3Ic10BH'
+  FORMAT = '<3IcH'
 
   @property
   def insertion_time(self):
@@ -111,6 +111,8 @@ class InsertionRecord(GenericTimestampedRecord):
   def __repr__(self):
     return '%s:  state=%s' % (self.display_time, self.session_state)
 
+class G5InsertionRecord (InsertionRecord):
+  FORMAT = '<3Ic10BH'
 
 class Calibration(GenericTimestampedRecord):
   FORMAT = '<2Iddd3cdb'
@@ -184,6 +186,12 @@ class Calibration(GenericTimestampedRecord):
   def crc(self):
     return struct.unpack('H', self.raw_data[-2:])[0]
 
+class LegacyCalibration (Calibration):
+  @classmethod
+  def _ClassSize(cls):
+
+    return cls.LEGACY_SIZE
+
 
 class SubCal (GenericTimestampedRecord):
   FORMAT = '<IIIIc'
@@ -207,7 +215,7 @@ class SubCal (GenericTimestampedRecord):
     return util.ReceiverTimeToTime(self.data[3])
 
 class MeterRecord(GenericTimestampedRecord):
-  FORMAT = '<2IHI5BH'
+  FORMAT = '<2IHIH'
   FIELDS = ['meter_glucose', 'meter_time' ]
 
   @property
@@ -221,6 +229,8 @@ class MeterRecord(GenericTimestampedRecord):
   def __repr__(self):
     return '%s: Meter BG:%s' % (self.display_time, self.meter_glucose)
 
+class G5MeterRecord (MeterRecord):
+  FORMAT = '<2IHI5BH'
 
 class EventRecord(GenericTimestampedRecord):
   # sys_time,display_time,glucose,meter_time,crc
@@ -280,7 +290,7 @@ class EGVRecord(GenericTimestampedRecord):
   # uint, uint, ushort, byte, ushort
   # (system_seconds, display_seconds, glucose, trend_arrow, crc)
   FIELDS = ['glucose', 'trend_arrow']
-  FORMAT = '<2IHBBBBBBBBBcBH'
+  FORMAT = '<2IHcH'
 
   @property
   def full_glucose(self):
@@ -288,7 +298,7 @@ class EGVRecord(GenericTimestampedRecord):
 
   @property
   def full_trend(self):
-    return self.data[12]
+    return self.data[3]
 
   @property
   def display_only(self):
@@ -318,3 +328,11 @@ class EGVRecord(GenericTimestampedRecord):
     else:
       return '%s: CGM BG:%s (%s) DO:%s' % (self.display_time, self.glucose,
                                            self.trend_arrow, self.display_only)
+
+class G5EGVRecord (EGVRecord):
+  FORMAT = '<2IHBBBBBBBBBcBH'
+  @property
+  def full_trend(self):
+    return self.data[12]
+
+
