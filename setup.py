@@ -10,7 +10,7 @@ def readme():
         return f.read()
 
 setup(name='dexcom_reader',
-    version='0.1.8', # http://semver.org/
+    version='0.1.9-dev', # http://semver.org/
     description='Audit, and inspect data from Dexcom G4.',
     long_description=readme(),
     author="Will Nowak",
@@ -32,7 +32,7 @@ setup(name='dexcom_reader',
         'Topic :: Software Development :: Libraries'
     ],
     package_data={
-      'dexcom_reader': ['dexcom_reader/etc/udev/rules.d/*']
+      'dexcom_reader': ['etc/udev/rules.d/*']
     },
     data_files = [
       ('/etc/udev/rules.d', ['dexcom_reader/etc/udev/rules.d/80-dexcom.rules'] ),
