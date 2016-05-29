@@ -1,4 +1,4 @@
 include README.md
 include LICENSE
 include CHANGES.*
-recursive-include etc *
+recursive-include dexcom_reader/etc *
