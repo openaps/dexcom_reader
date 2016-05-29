@@ -10,7 +10,7 @@ def readme():
         return f.read()
 
 setup(name='dexcom_reader',
-    version='0.1.1', # http://semver.org/
+    version='0.1.2-dev', # http://semver.org/
     description='Audit, and inspect data from Dexcom G4.',
     long_description=readme(),
     author="Will Nowak",
@@ -19,7 +19,7 @@ setup(name='dexcom_reader',
     maintainer="Ben West",
     maintainer_email="bewest+dexcom_reader@gmail.com",
     url="https://github.com/openaps/dexcom_reader",
-    packages=find_packages( ) + ['etc'],
+    packages=find_packages( ),
     install_requires = [
       'pyserial'
     ],
