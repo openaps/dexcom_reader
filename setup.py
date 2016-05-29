@@ -35,7 +35,7 @@ setup(name='dexcom_reader',
       'dexcom_reader': ['etc/udev/rules.d/*']
     },
     data_files = [
-      ('/etc/udev/rules.d/80-dexcom.rules', ['etc/udev/80-dexcom.rules'] ),
+      ('/etc/udev/rules.d/80-dexcom.rules', ['etc/udev/rules.d/80-dexcom.rules'] ),
 
     ],
     zip_safe=False,
