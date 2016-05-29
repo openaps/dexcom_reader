@@ -32,7 +32,7 @@ setup(name='dexcom_reader',
         'Topic :: Software Development :: Libraries'
     ],
     package_data={
-      'dexcom_reader': ['dexcom_reader/etc/udev/rules.d/*']
+      'dexcom_reader': ['etc/udev/rules.d/*']
     },
     data_files = [
       ('/etc/udev/rules.d', ['dexcom_reader/etc/udev/rules.d/80-dexcom.rules'] ),
