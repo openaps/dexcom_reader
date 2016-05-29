@@ -103,20 +103,116 @@ class InsertionRecord(GenericTimestampedRecord):
   def session_state(self):
     states = [None, 'REMOVED', 'EXPIRED', 'RESIDUAL_DEVIATION',
               'COUNTS_DEVIATION', 'SECOND_SESSION', 'OFF_TIME_LOSS',
-              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE']
+              'STARTED', 'BAD_TRANSMITTER', 'MANUFACTURING_MODE',
+              'UNKNOWN1', 'UNKNOWN2', 'UNKNOWN3', 'UNKNOWN4', 'UNKNOWN5',
+              'UNKNOWN6', 'UNKNOWN7', 'UNKNOWN8']
     return states[ord(self.data[3])]
 
   def __repr__(self):
     return '%s:  state=%s' % (self.display_time, self.session_state)
 
+class G5InsertionRecord (InsertionRecord):
+  FORMAT = '<3Ic10BH'
 
 class Calibration(GenericTimestampedRecord):
+  FORMAT = '<2Iddd3cdb'
+  # CAL_FORMAT = '<2Iddd3cdb'
+  FIELDS = [ 'slope', 'intercept', 'scale', 'decay', 'numsub', 'raw' ]
   @property
-  def raw(self):
-    return binascii.hexlify(bytearray(self.data))
+  def raw (self):
+    return binascii.hexlify(self.raw_data)
+  @property
+  def slope  (self):
+    return self.data[2]
+  @property
+  def intercept  (self):
+    return self.data[3]
+  @property
+  def scale (self):
+    return self.data[4]
+  @property
+  def decay (self):
+    return self.data[8]
+  @property
+  def numsub (self):
+    return int(self.data[9])
 
   def __repr__(self):
     return '%s: CAL SET:%s' % (self.display_time, self.raw)
+
+  LEGACY_SIZE = 148
+  REV_2_SIZE = 249
+  @classmethod
+  def _ClassSize(cls):
+
+    return cls.REV_2_SIZE
+
+  @classmethod
+  def Create(cls, data, record_counter):
+    offset = record_counter * cls._ClassSize()
+    cal_size = struct.calcsize(cls.FORMAT)
+    raw_data = data[offset:offset + cls._ClassSize()]
+
+    cal_data = data[offset:offset + cal_size]
+    unpacked_data = cls._ClassFormat().unpack(cal_data)
+    return cls(unpacked_data, raw_data)
+
+  def __init__ (self, data, raw_data):
+    self.page_data = raw_data
+    self.raw_data = raw_data
+    self.data = data
+    subsize = struct.calcsize(SubCal.FORMAT)
+    offset = self.numsub * subsize
+    calsize = struct.calcsize(self.FORMAT)
+    caldata = raw_data[:calsize]
+    subdata = raw_data[calsize:calsize + offset]
+    crcdata = raw_data[calsize+offset:calsize+offset+2]
+
+    subcals = [ ]
+    for i in xrange(self.numsub):
+      offset = i * subsize
+      raw_sub = subdata[offset:offset+subsize]
+      sub = SubCal(raw_sub, self.data[1])
+      subcals.append(sub)
+
+    self.subcals = subcals
+
+    self.check_crc()
+  def to_dict (self):
+    res = super(Calibration, self).to_dict( )
+    res['subrecords'] = [ sub.to_dict( ) for sub in  self.subcals ]
+    return res
+  @property
+  def crc(self):
+    return struct.unpack('H', self.raw_data[-2:])[0]
+
+class LegacyCalibration (Calibration):
+  @classmethod
+  def _ClassSize(cls):
+
+    return cls.LEGACY_SIZE
+
+
+class SubCal (GenericTimestampedRecord):
+  FORMAT = '<IIIIc'
+  BASE_FIELDS = [ ]
+  FIELDS = [ 'entered', 'meter',  'sensor', 'applied', ]
+  def __init__ (self, raw_data, displayOffset=None):
+    self.raw_data = raw_data
+    self.data = self._ClassFormat().unpack(raw_data)
+    self.displayOffset = displayOffset
+  @property
+  def entered  (self):
+    return util.ReceiverTimeToTime(self.data[0])
+  @property
+  def meter  (self):
+    return int(self.data[1])
+  @property
+  def sensor  (self):
+    return int(self.data[2])
+  @property
+  def applied  (self):
+    return util.ReceiverTimeToTime(self.data[3])
 
 class MeterRecord(GenericTimestampedRecord):
   FORMAT = '<2IHIH'
@@ -133,6 +229,8 @@ class MeterRecord(GenericTimestampedRecord):
   def __repr__(self):
     return '%s: Meter BG:%s' % (self.display_time, self.meter_glucose)
 
+class G5MeterRecord (MeterRecord):
+  FORMAT = '<2IHI5BH'
 
 class EventRecord(GenericTimestampedRecord):
   # sys_time,display_time,glucose,meter_time,crc
@@ -230,3 +328,11 @@ class EGVRecord(GenericTimestampedRecord):
     else:
       return '%s: CGM BG:%s (%s) DO:%s' % (self.display_time, self.glucose,
                                            self.trend_arrow, self.display_only)
+
+class G5EGVRecord (EGVRecord):
+  FORMAT = '<2IHBBBBBBBBBcBH'
+  @property
+  def full_trend(self):
+    return self.data[12]
+
+
