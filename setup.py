@@ -35,7 +35,9 @@ setup(name='dexcom_reader',
       'dexcom_reader': ['etc/udev/rules.d/*']
     },
     data_files = [
-      ('/etc/udev/rules.d', ['dexcom_reader/etc/udev/rules.d/80-dexcom.rules'] ),
+      # installing to system locations breaks things for virtualenv based
+      # environments.
+      # ('/etc/udev/rules.d', ['dexcom_reader/etc/udev/rules.d/80-dexcom.rules'] ),
 
     ],
     zip_safe=False,
