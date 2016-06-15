@@ -289,7 +289,7 @@ class SensorRecord(GenericTimestampedRecord):
 class EGVRecord(GenericTimestampedRecord):
   # uint, uint, ushort, byte, ushort
   # (system_seconds, display_seconds, glucose, trend_arrow, crc)
-  FIELDS = ['glucose', 'trend_arrow']
+  FIELDS = ['glucose', 'trend_arrow', 'noise']
   FORMAT = '<2IHcH'
 
   @property
@@ -322,6 +322,9 @@ class EGVRecord(GenericTimestampedRecord):
     arrow_value = ord(self.full_trend) & constants.EGV_TREND_ARROW_MASK
     return constants.TREND_ARROW_VALUES[arrow_value]
 
+  @property
+  def noise (self):
+    return (ord(self.data[3]) & constants.EGV_NOISE_MASK) >> 4
   def __repr__(self):
     if self.is_special:
       return '%s: %s' % (self.display_time, self.glucose_special_meaning)
