@@ -303,13 +303,15 @@ class Dexcom(object):
       for record in records:
         yield record
   
-  def ReadRecords(self, record_type):
+  def ReadRecords(self, record_type, n=0):
     records = []
     assert record_type in constants.RECORD_TYPES
     page_range = self.ReadDatabasePageRange(record_type)
     start, end = page_range
     if start != end or not end:
       end += 1
+    if n>0 and end - n > start:
+      start = end - n
     for x in range(start, end):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
@@ -330,4 +332,18 @@ def GetDevice (port, G5=False):
   return Dexcom(port)
 
 if __name__ == '__main__':
-  Dexcom.LocateAndDownload()
+
+  from optparse import OptionParser
+
+  G5_IS_DEFAULT = False
+
+  parser = OptionParser()
+  parser.add_option("--g4", action="store_false", dest="g5", default=G5_IS_DEFAULT, help="use Dexcom G4 instead of Dexcom G5")
+  parser.add_option("--g5", action="store_true",  dest="g5", default=G5_IS_DEFAULT, help="use Dexcom G5 instead of Dexcom G4")
+
+  (options, args) = parser.parse_args()
+
+  if options.g5:
+    DexcomG5.LocateAndDownload()
+  else:
+    Dexcom.LocateAndDownload()
