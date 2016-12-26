@@ -303,13 +303,15 @@ class Dexcom(object):
       for record in records:
         yield record
   
-  def ReadRecords(self, record_type):
+  def ReadRecords(self, record_type, n=0):
     records = []
     assert record_type in constants.RECORD_TYPES
     page_range = self.ReadDatabasePageRange(record_type)
     start, end = page_range
     if start != end or not end:
       end += 1
+    if n>0 and end - n > start:
+      start = end - n
     for x in range(start, end):
       records.extend(self.ReadDatabasePage(record_type, x))
     return records
