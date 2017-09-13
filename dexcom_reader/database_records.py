@@ -1,8 +1,14 @@
-import crc16
-import constants
+from __future__ import absolute_import
+from . import crc16
+from . import constants
 import struct
-import util
+from . import util
 import binascii
+
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
 
 
 class BaseDatabaseRecord(object):
@@ -26,7 +32,7 @@ class BaseDatabaseRecord(object):
   @property
   def FMT(self):
     self._CheckFormat()
-    return _ClassFormat()
+    return self._ClassFormat()
 
   @property
   def SIZE(self):

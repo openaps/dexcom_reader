@@ -298,7 +298,8 @@ def _extractall(self, path=".", members=None):
     # Reverse sort directories.
     if sys.version_info < (2, 4):
         def sorter(dir1, dir2):
-            return cmp(dir1.name, dir2.name)
+            # cmp: not Python 3 compatible but use of ez_setup.py is deprecated
+            return cmp(dir1.name, dir2.name)  # noqa cmp not Python3 compatible
         directories.sort(sorter)
         directories.reverse()
     else:

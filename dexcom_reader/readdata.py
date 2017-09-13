@@ -1,16 +1,23 @@
-import crc16
-import constants
-import database_records
+from __future__ import print_function
+from __future__ import absolute_import
+from . import crc16
+from . import constants
+from . import database_records
 import datetime
 import serial
 import sys
 import time
-import packetwriter
+from . import packetwriter
 import struct
 import re
-import util
+from . import util
 import xml.etree.ElementTree as ET
 import platform
+
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
 
 
 class ReadPacket(object):
@@ -44,16 +51,16 @@ class Dexcom(object):
       print ('Found %s S/N: %s'
              % (dex.GetFirmwareHeader().get('ProductName'),
                 dex.ReadManufacturingData().get('SerialNumber')))
-      print 'Transmitter paired: %s' % dex.ReadTransmitterId()
-      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
-                                           dex.ReadBatteryLevel())
-      print 'Record count:'
-      print '- Meter records: %d' % (len(dex.ReadRecords('METER_DATA')))
-      print '- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA')))
+      print('Transmitter paired: %s' % dex.ReadTransmitterId())
+      print('Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
+                                           dex.ReadBatteryLevel()))
+      print('Record count:')
+      print('- Meter records: %d' % (len(dex.ReadRecords('METER_DATA'))))
+      print('- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA'))))
       print ('- CGM commitable records: %d'
              % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
-      print '- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA')))
-      print '- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME')))
+      print('- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA'))))
+      print('- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME'))))
 
   def __init__(self, port):
     self._port_name = port

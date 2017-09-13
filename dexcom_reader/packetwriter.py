@@ -1,4 +1,5 @@
-import crc16
+from __future__ import absolute_import
+from . import crc16
 import struct
 
 class PacketWriter(object):
