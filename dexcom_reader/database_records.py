@@ -26,7 +26,7 @@ class BaseDatabaseRecord(object):
   @property
   def FMT(self):
     self._CheckFormat()
-    return _ClassFormat()
+    return self._ClassFormat()
 
   @property
   def SIZE(self):
