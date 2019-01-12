@@ -335,4 +335,5 @@ class G5EGVRecord (EGVRecord):
   def full_trend(self):
     return self.data[12]
 
-
+class G6EGVRecord (G5EGVRecord):
+  FORMAT = '<2IHBBBBBBBBBcBBBH'
