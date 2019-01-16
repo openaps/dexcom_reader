@@ -30,14 +30,14 @@ class ReadPacket(object):
 class Dexcom(object):
   @staticmethod
   def FindDevice():
-    return util.find_usbserial(constants.DEXCOM_G4_USB_VENDOR,
-                               constants.DEXCOM_G4_USB_PRODUCT)
+    return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
+                               constants.DEXCOM_USB_PRODUCT)
 
   @classmethod
   def LocateAndDownload(cls):
     device = cls.FindDevice()
     if not device:
-      sys.stderr.write('Could not find Dexcom G4 Receiver!\n')
+      sys.stderr.write('Could not find Dexcom Receiver!\n')
       sys.exit(1)
     else:
       dex = cls(device)
@@ -270,15 +270,21 @@ class Dexcom(object):
       'USER_EVENT_DATA': database_records.EventRecord,
       'METER_DATA': database_records.MeterRecord,
       'CAL_SET': database_records.Calibration,
-      # 'CAL_SET': database_records.Calibration,
       'INSERTION_TIME': database_records.InsertionRecord,
       'EGV_DATA': database_records.EGVRecord,
       'SENSOR_DATA': database_records.SensorRecord,
     }
+
   def ParsePage(self, header, data):
     record_type = constants.RECORD_TYPES[ord(header[2])]
     revision = int(header[3])
     generic_parser_map = self.PARSER_MAP
+    if revision > 4 and record_type == 'EGV_DATA':
+      generic_parser_map.update(EGV_DATA=database_records.G6EGVRecord)
+    if revision > 1 and record_type == 'INSERTION_TIME':
+      generic_parser_map.update(INSERTION_TIME=database_records.G5InsertionRecord)      
+    if revision > 2 and record_type == 'METER_DATA':
+      generic_parser_map.update(METER_DATA=database_records.G5MeterRecord)
     if revision < 2 and record_type == 'CAL_SET':
       generic_parser_map.update(CAL_SET=database_records.LegacyCalibration)
     xml_parsed = ['PC_SOFTWARE_PARAMETER', 'MANUFACTURING_DATA']
@@ -324,9 +330,21 @@ class DexcomG5 (Dexcom):
       'SENSOR_DATA': database_records.SensorRecord,
     }
 
-def GetDevice (port, G5=False):
+class DexcomG6 (Dexcom):
+  PARSER_MAP = {
+      'USER_EVENT_DATA': database_records.EventRecord,
+      'METER_DATA': database_records.G5MeterRecord,
+      'CAL_SET': database_records.Calibration,
+      'INSERTION_TIME': database_records.G5InsertionRecord,
+      'EGV_DATA': database_records.G6EGVRecord,
+      'SENSOR_DATA': database_records.SensorRecord,
+    }
+
+def GetDevice (port, G5=False, G6=False):
   if G5:
     return DexcomG5(port)
+  if G6:
+    return DexcomG6(port)
   return Dexcom(port)
 
 if __name__ == '__main__':
