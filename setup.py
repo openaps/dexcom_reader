@@ -10,8 +10,8 @@ def readme():
         return f.read()
 
 setup(name='dexcom_reader',
-    version='0.1.10', # http://semver.org/
-    description='Audit, and inspect data from Dexcom G4.',
+    version='0.1.11', # http://semver.org/
+    description='Audit, and inspect data from Dexcom G4, G5, and G6 receivers.',
     long_description=readme(),
     author="Will Nowak",
     # I'm just maintaining the package, @compbrain authored it.
