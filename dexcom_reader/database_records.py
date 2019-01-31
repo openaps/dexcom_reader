@@ -4,6 +4,11 @@ import struct
 import util
 import binascii
 
+try:
+  xrange
+except NameError:
+  xrange = range
+
 
 class BaseDatabaseRecord(object):
   FORMAT = None
