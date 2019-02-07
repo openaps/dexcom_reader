@@ -15,7 +15,7 @@ class BaseDatabaseRecord(object):
 
   @classmethod
   def _CheckFormat(cls):
-    if cls.FORMAT is None or not cls.FORMAT:
+    if not cls.FORMAT:
       raise NotImplementedError("Subclasses of %s need to define FORMAT"
                                 % cls.__name__)
 
