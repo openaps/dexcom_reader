@@ -47,17 +47,17 @@ class Dexcom(object):
       sys.exit(1)
     else:
       dex = cls(device)
-      print ('Found %s S/N: %s'
-             % (dex.GetFirmwareHeader().get('ProductName'),
-                dex.ReadManufacturingData().get('SerialNumber')))
+      print('Found %s S/N: %s'
+            % (dex.GetFirmwareHeader().get('ProductName'),
+               dex.ReadManufacturingData().get('SerialNumber')))
       print('Transmitter paired: %s' % dex.ReadTransmitterId())
       print('Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
                                            dex.ReadBatteryLevel()))
       print('Record count:')
       print('- Meter records: %d' % (len(dex.ReadRecords('METER_DATA'))))
       print('- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA'))))
-      print ('- CGM commitable records: %d'
-             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
+      print('- CGM commitable records: %d'
+            % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
       print('- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA'))))
       print('- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME'))))
 
