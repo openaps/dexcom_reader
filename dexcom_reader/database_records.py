@@ -26,7 +26,7 @@ class BaseDatabaseRecord(object):
 
   @classmethod
   def _ClassSize(cls):
-    return cls._ClassFormat().size
+    return cls._ClassFormat().size  # noqa: F821
 
   @property
   def FMT(self):
