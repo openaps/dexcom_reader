@@ -1,3 +1,4 @@
+from __future__ import print_function
 import crc16
 import constants
 import database_records
@@ -11,6 +12,11 @@ import re
 import util
 import xml.etree.ElementTree as ET
 import platform
+
+try:
+  xrange
+except NameError:
+  xrange = range
 
 
 class ReadPacket(object):
@@ -41,19 +47,19 @@ class Dexcom(object):
       sys.exit(1)
     else:
       dex = cls(device)
-      print ('Found %s S/N: %s'
-             % (dex.GetFirmwareHeader().get('ProductName'),
-                dex.ReadManufacturingData().get('SerialNumber')))
-      print 'Transmitter paired: %s' % dex.ReadTransmitterId()
-      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
-                                           dex.ReadBatteryLevel())
-      print 'Record count:'
-      print '- Meter records: %d' % (len(dex.ReadRecords('METER_DATA')))
-      print '- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA')))
-      print ('- CGM commitable records: %d'
-             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
-      print '- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA')))
-      print '- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME')))
+      print('Found %s S/N: %s'
+            % (dex.GetFirmwareHeader().get('ProductName'),
+               dex.ReadManufacturingData().get('SerialNumber')))
+      print('Transmitter paired: %s' % dex.ReadTransmitterId())
+      print('Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
+                                           dex.ReadBatteryLevel()))
+      print('Record count:')
+      print('- Meter records: %d' % (len(dex.ReadRecords('METER_DATA'))))
+      print('- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA'))))
+      print('- CGM commitable records: %d'
+            % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
+      print('- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA'))))
+      print('- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME'))))
 
   def __init__(self, port):
     self._port_name = port
@@ -302,7 +308,7 @@ class Dexcom(object):
       records.reverse( )
       for record in records:
         yield record
-  
+
   def ReadRecords(self, record_type):
     records = []
     assert record_type in constants.RECORD_TYPES

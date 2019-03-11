@@ -4,13 +4,18 @@ import struct
 import util
 import binascii
 
+try:
+  xrange
+except NameError:
+  xrange = range
+
 
 class BaseDatabaseRecord(object):
   FORMAT = None
 
   @classmethod
   def _CheckFormat(cls):
-    if cls.FORMAT is None or not cls.FORMAT:
+    if not cls.FORMAT:
       raise NotImplementedError("Subclasses of %s need to define FORMAT"
                                 % cls.__name__)
 
@@ -26,7 +31,7 @@ class BaseDatabaseRecord(object):
   @property
   def FMT(self):
     self._CheckFormat()
-    return _ClassFormat()
+    return self._ClassFormat()
 
   @property
   def SIZE(self):

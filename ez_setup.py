@@ -25,6 +25,12 @@ import platform
 from distutils import log
 
 try:
+    cmp            # Python 2
+except NameError:  # Python 3
+    def cmp(x, y):
+        return (x > y) - (x < y)
+
+try:
     from site import USER_SITE
 except ImportError:
     USER_SITE = None
