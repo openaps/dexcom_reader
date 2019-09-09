@@ -5,6 +5,7 @@ import platform
 import plistlib
 import re
 import subprocess
+import serial.tools.list_ports
 
 
 def ReceiverTimeToTime(rtime):
@@ -61,6 +62,22 @@ def osx_find_usbserial(vendor, product):
   plist = plistlib.readPlistFromString(stdout)
   return recur(plist)
 
+def windows_find_usbserial(vendor, product):
+  ports = list(serial.tools.list_ports.comports())
+  for p in ports:
+    try:
+      vid_pid_keyval = p.split()[1]
+      _, vid_pid_val = vid_pid_keyval.split('=')[1]
+      vid, pid = vid_pid_val.split(':')
+
+      if vid != vendor:
+        continue
+      if pid != product:
+        continue
+
+      return p.device
+    except IndexError:
+      continue
 
 def find_usbserial(vendor, product):
   """Find the tty device for a given usbserial devices identifiers.
@@ -77,6 +94,9 @@ def find_usbserial(vendor, product):
     return linux_find_usbserial(vendor, product)
   elif platform.system() == 'Darwin':
     return osx_find_usbserial(vendor, product)
+  elif platform.system() == 'Windows':
+    vendor, product = [('%04x' % (x)).strip() for x in (vendor, product)]
+    return windows_find_usbserial(vendor, product)
   else:
     raise NotImplementedError('Cannot find serial ports on %s'
                               % platform.system())
