@@ -21,7 +21,7 @@ class PacketWriter(object):
     self._packet[0] = chr(v)
 
   def PacketString(self):
-    return ''.join(self._packet)
+    return ''.join(map(str, self._packet))
  
   def AppendCrc(self):
     self.SetLength()
