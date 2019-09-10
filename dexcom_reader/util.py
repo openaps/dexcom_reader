@@ -67,7 +67,7 @@ def windows_find_usbserial(vendor, product):
   for p in ports:
     try:
       vid_pid_keyval = p.split()[1]
-      _, vid_pid_val = vid_pid_keyval.split('=')[1]
+      vid_pid_val = vid_pid_keyval.split('=')[1]
       vid, pid = vid_pid_val.split(':')
 
       if vid != vendor:
@@ -76,7 +76,7 @@ def windows_find_usbserial(vendor, product):
         continue
 
       return p.device
-    except IndexError:
+    except (IndexError, ValueError) as e:
       continue
 
 def find_usbserial(vendor, product):
