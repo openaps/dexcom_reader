@@ -1,16 +1,16 @@
 from __future__ import print_function # python 2 and 3 compatible
 
-import crc16
-import constants
-import database_records
+from . import crc16
+from . import constants
+from . import database_records
+from . import packetwriter
+from . import util
 import datetime
 import serial
 import sys
 import time
-import packetwriter
 import struct
 import re
-import util
 import xml.etree.ElementTree as ET
 import platform
 

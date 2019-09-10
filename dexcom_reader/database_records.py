@@ -1,7 +1,7 @@
-import crc16
-import constants
+from . import crc16
+from . import constants
+from . import util
 import struct
-import util
 import binascii
 
 
