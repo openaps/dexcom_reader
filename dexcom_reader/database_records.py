@@ -26,7 +26,7 @@ class BaseDatabaseRecord(object):
   @property
   def FMT(self):
     self._CheckFormat()
-    return _ClassFormat()
+    return self._ClassFormat()
 
   @property
   def SIZE(self):
@@ -169,7 +169,7 @@ class Calibration(GenericTimestampedRecord):
     crcdata = raw_data[calsize+offset:calsize+offset+2]
 
     subcals = [ ]
-    for i in xrange(self.numsub):
+    for i in range(self.numsub):
       offset = i * subsize
       raw_sub = subdata[offset:offset+subsize]
       sub = SubCal(raw_sub, self.data[1])

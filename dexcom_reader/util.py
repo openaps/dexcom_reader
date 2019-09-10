@@ -49,7 +49,7 @@ def osx_find_usbserial(vendor, product):
         if out is not None:
           return out
     elif type(v) == dict or issubclass(type(v), dict):
-      for x in v.values():
+      for x in list(v.values()):
         out = recur(x)
         if out is not None:
           return out
