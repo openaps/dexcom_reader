@@ -13,10 +13,14 @@ import struct
 import re
 import xml.etree.ElementTree as ET
 import platform
+import binascii
 
 
 class ReadPacket(object):
   def __init__(self, command, data):
+    if util.python3():
+      data = util.to_bytes(data)
+      print(len(data), file=sys.stderr)
     self._command = command
     self._data = data
 
@@ -32,8 +36,11 @@ class ReadPacket(object):
 class Dexcom(object):
   @staticmethod
   def FindDevice():
-    return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
+    try:
+      return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
                                constants.DEXCOM_USB_PRODUCT)
+    except:
+      return '/dev/ttyS5'
 
   @classmethod
   def LocateAndDownload(cls):
@@ -85,9 +92,15 @@ class Dexcom(object):
     total_read = 4
     initial_read = self.read(total_read)
     all_data = initial_read
-    if (util.python3() and initial_read[0] == 1) or (ord(initial_read[0]) == 1):
+    if util.Ord(initial_read[0]) == constants.ACK:
       command = initial_read[3]
       data_number = struct.unpack('<H', initial_read[1:3])[0]
+      print("command: {command}, {data_number} bytes in this packet".format(
+          command=binascii.hexlify(bytes([command]))
+          , data_number=data_number
+        )
+        , file=sys.stderr
+      )
       if data_number > 6:
         toread = abs(data_number-6)
         second_read = self.read(toread)
@@ -104,7 +117,7 @@ class Dexcom(object):
       num1 = total_read + 2
       return ReadPacket(command, out)
     else:
-      raise constants.Error('Error reading packet header!')
+      raise constants.Error('Error reading packet header, device did not ACK!')
 
   def Ping(self):
     self.WriteCommand(constants.PING)
@@ -112,6 +125,7 @@ class Dexcom(object):
     return ord(packet.command) == constants.ACK
 
   def WritePacket(self, packet):
+    print("writing packet:", binascii.hexlify(packet))
     if not packet:
       raise constants.Error('Need a packet to send')
     packetlen = len(packet)
@@ -250,7 +264,7 @@ class Dexcom(object):
     self.WriteCommand(constants.READ_DATABASE_PAGES,
                       (chr(record_type_index), struct.pack('I', page), chr(1)))
     packet = self.readpacket()
-    assert ord(packet.command) == 1
+    assert util.Ord(packet.command) == constants.ACK
     # first index (uint), numrec (uint), record_type (byte), revision (byte),
     # page# (uint), r1 (uint), r2 (uint), r3 (uint), ushort (Crc)
     header_format = '<2IcB4IH'
@@ -258,7 +272,7 @@ class Dexcom(object):
     header = struct.unpack_from(header_format, packet.data)
     header_crc = crc16.crc16(packet.data[:header_data_len-2])
     assert header_crc == header[-1]
-    assert ord(header[2]) == record_type_index
+    assert util.Ord(header[2]) == record_type_index, "{a} != {b}".format(a=util.Ord(header[2]), b=record_type_index)
     assert header[4] == page
     packet_data = packet.data[header_data_len:]
 
@@ -278,7 +292,7 @@ class Dexcom(object):
     }
 
   def ParsePage(self, header, data):
-    record_type = constants.RECORD_TYPES[ord(header[2])]
+    record_type = constants.RECORD_TYPES[util.Ord(header[2])]
     revision = int(header[3])
     generic_parser_map = self.PARSER_MAP
     if revision > 4 and record_type == 'EGV_DATA':

@@ -8,8 +8,25 @@ import subprocess
 import sys
 import serial.tools.list_ports
 
+def Ord(byte):
+  if isinstance(byte, int):
+    return byte
+  elif isinstance(byte, str):
+    return ord(byte)
+  elif isinstance(byte, bytes):
+    return int(byte[0])
+  else:
+    raise TypeError("unexpected class when changing to bytes: {class_name}".format(
+        class_name=str(byte.__class__)
+      )
+    )
+
 def python3():
-    return sys.version_info[0] == 3
+  return sys.version_info[0] == 3
+
+def to_bytes(iterable):
+  return bytes(map(Ord, iterable))
+
 
 def ReceiverTimeToTime(rtime):
   return constants.BASE_TIME + datetime.timedelta(seconds=rtime)

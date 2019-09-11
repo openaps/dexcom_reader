@@ -1,4 +1,5 @@
 from . import crc16
+from . import util
 import struct
 
 class PacketWriter(object):
@@ -21,8 +22,12 @@ class PacketWriter(object):
     self._packet[0] = chr(v)
 
   def PacketString(self):
-    return ''.join(map(str, self._packet))
- 
+    packet_string = ''.join(map(str, self._packet))
+
+    if util.python3():
+      return util.to_bytes(self._packet)
+    else:
+      return packet_string 
   def AppendCrc(self):
     self.SetLength()
     ps = self.PacketString()
