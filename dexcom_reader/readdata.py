@@ -85,7 +85,7 @@ class Dexcom(object):
     total_read = 4
     initial_read = self.read(total_read)
     all_data = initial_read
-    if ord(initial_read[0]) == 1:
+    if (util.python3() and initial_read[0] == 1) or (ord(initial_read[0]) == 1):
       command = initial_read[3]
       data_number = struct.unpack('<H', initial_read[1:3])[0]
       if data_number > 6:

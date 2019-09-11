@@ -1,3 +1,5 @@
+import sys
+
 TABLE = [
   0, 4129, 8258, 12387, 16516, 20645, 24774, 28903, 33032, 37161, 41290, 
   45419, 49548, 53677, 57806, 61935, 4657, 528, 12915, 8786, 21173, 17044, 
@@ -33,5 +35,8 @@ def crc16(buf, start=None, end=None):
     end = len(buf)
   num = 0
   for i in range(start, end):
-    num = ((num<<8)&0xff00) ^ TABLE[((num>>8)&0xff)^ord(buf[i])]
+    if sys.version_info[0] == 2:
+        num = ((num<<8)&0xff00) ^ TABLE[((num>>8)&0xff)^ord(buf[i])]
+    else:
+        num = ((num<<8)&0xff00) ^ TABLE[((num>>8)&0xff)^buf[i]]
   return num & 0xffff

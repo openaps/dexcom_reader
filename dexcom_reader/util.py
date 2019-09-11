@@ -5,8 +5,11 @@ import platform
 import plistlib
 import re
 import subprocess
+import sys
 import serial.tools.list_ports
 
+def python3():
+    return sys.version_info[0] == 3
 
 def ReceiverTimeToTime(rtime):
   return constants.BASE_TIME + datetime.timedelta(seconds=rtime)
@@ -66,13 +69,13 @@ def windows_find_usbserial(vendor, product):
   ports = list(serial.tools.list_ports.comports())
   for p in ports:
     try:
-      vid_pid_keyval = p.split()[1]
+      vid_pid_keyval = p.hwid.split()[1]
       vid_pid_val = vid_pid_keyval.split('=')[1]
       vid, pid = vid_pid_val.split(':')
 
-      if vid != vendor:
+      if vid.lower() != vendor.lower():
         continue
-      if pid != product:
+      if pid.lower() != product.lower():
         continue
 
       return p.device
