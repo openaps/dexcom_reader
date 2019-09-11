@@ -13,14 +13,12 @@ import struct
 import re
 import xml.etree.ElementTree as ET
 import platform
-import binascii
 
 
 class ReadPacket(object):
   def __init__(self, command, data):
     if util.python3():
       data = util.to_bytes(data)
-      print(len(data), file=sys.stderr)
     self._command = command
     self._data = data
 
@@ -40,7 +38,7 @@ class Dexcom(object):
       return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
                                constants.DEXCOM_USB_PRODUCT)
     except:
-      return '/dev/ttyS5'
+      return '/dev/ttyS5' #TODO: remove before reopening pull request!
 
   @classmethod
   def LocateAndDownload(cls):
@@ -95,12 +93,6 @@ class Dexcom(object):
     if util.Ord(initial_read[0]) == constants.ACK:
       command = initial_read[3]
       data_number = struct.unpack('<H', initial_read[1:3])[0]
-      print("command: {command}, {data_number} bytes in this packet".format(
-          command=binascii.hexlify(bytes([command]))
-          , data_number=data_number
-        )
-        , file=sys.stderr
-      )
       if data_number > 6:
         toread = abs(data_number-6)
         second_read = self.read(toread)
@@ -125,7 +117,6 @@ class Dexcom(object):
     return ord(packet.command) == constants.ACK
 
   def WritePacket(self, packet):
-    print("writing packet:", binascii.hexlify(packet))
     if not packet:
       raise constants.Error('Need a packet to send')
     packetlen = len(packet)
