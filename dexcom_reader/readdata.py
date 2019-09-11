@@ -34,11 +34,8 @@ class ReadPacket(object):
 class Dexcom(object):
   @staticmethod
   def FindDevice():
-    try:
-      return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
+    return util.find_usbserial(constants.DEXCOM_USB_VENDOR,
                                constants.DEXCOM_USB_PRODUCT)
-    except:
-      return '/dev/ttyS5' #TODO: remove before reopening pull request!
 
   @classmethod
   def LocateAndDownload(cls):
