@@ -85,7 +85,10 @@ class GenericXMLRecord(GenericTimestampedRecord):
 
   @property
   def xmldata(self):
-    data = self.data[2].replace("\x00", "")
+    try:
+        data = self.data[2].replace("\x00", "")
+    except TypeError:
+        data = self.data[2].replace(bytearray(1), bytearray())
     return data
 
 

@@ -1,10 +1,10 @@
 from __future__ import print_function # python 2 and 3 compatible
 
-from . import crc16
 from . import constants
+from . import util
+from . import crc16
 from . import database_records
 from . import packetwriter
-from . import util
 import datetime
 import serial
 import sys
