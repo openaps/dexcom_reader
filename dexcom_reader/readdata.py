@@ -98,20 +98,21 @@ class Dexcom(object):
         out = second_read
       else:
         out =  ''
-      suffix = self.read(2)
-      sent_crc = struct.unpack('<H', suffix)[0]
+      suffix = bytes(self.read(2))
+      sent_crc_le = struct.unpack('<H', suffix)[0]
+      #sent_crc_be = struct.unpack('>H', suffix)[0]
       local_crc = crc16.crc16(all_data, 0, total_read)
-      if sent_crc != local_crc:
-        raise constants.CrcError("readpacket Failed CRC check")
+      if local_crc != sent_crc_le: #not in {sent_crc_le, sent_crc_be}:
+        raise constants.CrcError("readpacket Failed CRC check {:04x} != {:04x}".format(local_crc, sent_crc_le))
       num1 = total_read + 2
       return ReadPacket(command, out)
     else:
-      raise constants.Error('Error reading packet header, device did not ACK!')
+      raise constants.Error('Error reading packet header, device did not ACK!' + str(inital_read[0]))
 
   def Ping(self):
     self.WriteCommand(constants.PING)
     packet = self.readpacket()
-    return ord(packet.command) == constants.ACK
+    return util.Ord(packet.command) == constants.ACK
 
   def WritePacket(self, packet):
     if not packet:
