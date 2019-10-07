@@ -1,4 +1,7 @@
-from . import constants
+if __package__ in {None, ''}:
+    import constants
+else:
+    from . import constants
 import datetime
 import os
 import platform
@@ -120,3 +123,12 @@ def find_usbserial(vendor, product):
   else:
     raise NotImplementedError('Cannot find serial ports on %s'
                               % platform.system())
+
+if __name__ == '__main__':
+    vendor = constants.DEXCOM_USB_VENDOR
+    product = constants.DEXCOM_USB_PRODUCT
+    if len(sys.argv) > 1:
+        vendor = int(sys.argv[1], 16)
+    if len(sys.argv) > 2:
+        product = int(sys.argv[2], 16)
+    print(find_usbserial(vendor, product))
