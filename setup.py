@@ -9,7 +9,7 @@ def readme():
 
 setup(
     name="dexcom_reader",
-    version="0.1.11",  # http://semver.org/
+    version="0.2.0",  # http://semver.org/
     description="Audit, and inspect data from Dexcom G4, G5, and G6 receivers.",
     long_description=readme(),
     author="Will Nowak",
@@ -24,7 +24,9 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3 :: Only",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",
     ],
