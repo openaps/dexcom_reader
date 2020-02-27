@@ -1,10 +1,11 @@
-from . import constants
 import datetime
 import os
 import platform
 import plistlib
 import re
 import subprocess
+
+from . import constants
 
 
 def ReceiverTimeToTime(rtime):

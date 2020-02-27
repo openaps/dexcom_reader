@@ -1,8 +1,7 @@
-from . import crc16
-from . import constants
-import struct
-from . import util
 import binascii
+import struct
+
+from . import constants, crc16, util
 
 
 class BaseDatabaseRecord(object):

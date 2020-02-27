@@ -1,16 +1,14 @@
-from . import crc16
-from . import constants
-from . import database_records
 import datetime
-import serial
+import platform
+import re
+import struct
 import sys
 import time
-from . import packetwriter
-import struct
-import re
-from . import util
-import xml.etree.ElementTree as ET
-import platform
+from xml.etree import ElementTree as ET
+
+import serial
+
+from . import constants, crc16, database_records, packetwriter, util
 
 
 class ReadPacket(object):
