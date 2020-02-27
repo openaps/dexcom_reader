@@ -11,7 +11,7 @@ import serial
 from . import constants, crc16, database_records, packetwriter, util
 
 
-class ReadPacket(object):
+class ReadPacket:
     def __init__(self, command, data):
         self._command = command
         self._data = data
@@ -25,7 +25,7 @@ class ReadPacket(object):
         return self._data
 
 
-class Dexcom(object):
+class Dexcom:
     @staticmethod
     def FindDevice():
         return util.find_usbserial(
@@ -41,12 +41,10 @@ class Dexcom(object):
         else:
             dex = cls(device)
             print(
-                (
-                    "Found %s S/N: %s"
-                    % (
-                        dex.GetFirmwareHeader().get("ProductName"),
-                        dex.ReadManufacturingData().get("SerialNumber"),
-                    )
+                "Found %s S/N: %s"
+                % (
+                    dex.GetFirmwareHeader().get("ProductName"),
+                    dex.ReadManufacturingData().get("SerialNumber"),
                 )
             )
             print("Transmitter paired: %s" % dex.ReadTransmitterId())
@@ -58,10 +56,8 @@ class Dexcom(object):
             print("- Meter records: %d" % (len(dex.ReadRecords("METER_DATA"))))
             print("- CGM records: %d" % (len(dex.ReadRecords("EGV_DATA"))))
             print(
-                (
-                    "- CGM commitable records: %d"
-                    % (len([not x.display_only for x in dex.ReadRecords("EGV_DATA")]))
-                )
+                "- CGM commitable records: %d"
+                % (len([not x.display_only for x in dex.ReadRecords("EGV_DATA")]))
             )
             print("- Event records: %d" % (len(dex.ReadRecords("USER_EVENT_DATA"))))
             print("- Insertion records: %d" % (len(dex.ReadRecords("INSERTION_TIME"))))
@@ -320,8 +316,7 @@ class Dexcom(object):
         for x in reversed(range(start, end)):
             records = list(self.ReadDatabasePage(record_type, x))
             records.reverse()
-            for record in records:
-                yield record
+            yield from records
 
     def ReadRecords(self, record_type):
         records = []

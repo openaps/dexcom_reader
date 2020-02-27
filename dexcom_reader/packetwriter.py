@@ -3,7 +3,7 @@ import struct
 from . import crc16
 
 
-class PacketWriter(object):
+class PacketWriter:
     MAX_PAYLOAD = 1584
     MIN_LEN = 6
     MAX_LEN = 1590

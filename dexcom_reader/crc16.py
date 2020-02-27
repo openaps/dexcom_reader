@@ -27,6 +27,7 @@ TABLE = [
 ]
 # fmt: on
 
+
 def crc16(buf, start=None, end=None):
     if start is None:
         start = 0

@@ -4,7 +4,7 @@ import struct
 from . import constants, crc16, util
 
 
-class BaseDatabaseRecord(object):
+class BaseDatabaseRecord:
     FORMAT = None
 
     @classmethod
@@ -125,7 +125,7 @@ class InsertionRecord(GenericTimestampedRecord):
         return states[ord(self.data[3])]
 
     def __repr__(self):
-        return "%s:  state=%s" % (self.display_time, self.session_state)
+        return "{}:  state={}".format(self.display_time, self.session_state)
 
 
 class G5InsertionRecord(InsertionRecord):
@@ -162,7 +162,7 @@ class Calibration(GenericTimestampedRecord):
         return int(self.data[9])
 
     def __repr__(self):
-        return "%s: CAL SET:%s" % (self.display_time, self.raw)
+        return "{}: CAL SET:{}".format(self.display_time, self.raw)
 
     LEGACY_SIZE = 148
     REV_2_SIZE = 249
@@ -205,7 +205,7 @@ class Calibration(GenericTimestampedRecord):
         self.check_crc()
 
     def to_dict(self):
-        res = super(Calibration, self).to_dict()
+        res = super().to_dict()
         res["subrecords"] = [sub.to_dict() for sub in self.subcals]
         return res
 
@@ -266,7 +266,7 @@ class MeterRecord(GenericTimestampedRecord):
         return util.ReceiverTimeToTime(self.data[3])
 
     def __repr__(self):
-        return "%s: Meter BG:%s" % (self.display_time, self.meter_glucose)
+        return "{}: Meter BG:{}".format(self.display_time, self.meter_glucose)
 
 
 class G5MeterRecord(MeterRecord):
@@ -312,11 +312,8 @@ class EventRecord(GenericTimestampedRecord):
         return value
 
     def __repr__(self):
-        return "%s:  event_type=%s sub_type=%s value=%s" % (
-            self.display_time,
-            self.event_type,
-            self.event_sub_type,
-            self.event_value,
+        return "{}:  event_type={} sub_type={} value={}".format(
+            self.display_time, self.event_type, self.event_sub_type, self.event_value,
         )
 
 
@@ -378,13 +375,10 @@ class EGVRecord(GenericTimestampedRecord):
 
     def __repr__(self):
         if self.is_special:
-            return "%s: %s" % (self.display_time, self.glucose_special_meaning)
+            return "{}: {}".format(self.display_time, self.glucose_special_meaning)
         else:
-            return "%s: CGM BG:%s (%s) DO:%s" % (
-                self.display_time,
-                self.glucose,
-                self.trend_arrow,
-                self.display_only,
+            return "{}: CGM BG:{} ({}) DO:{}".format(
+                self.display_time, self.glucose, self.trend_arrow, self.display_only,
             )
 
 
