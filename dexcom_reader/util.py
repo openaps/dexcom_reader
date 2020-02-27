@@ -1,4 +1,4 @@
-import constants
+from . import constants
 import datetime
 import os
 import platform
@@ -42,13 +42,13 @@ def osx_find_usbserial(vendor, product):
           else:
             break
 
-    if type(v) == list:
+    if isinstance(v, list):
       for x in v:
         out = recur(x)
         if out is not None:
           return out
-    elif type(v) == dict or issubclass(type(v), dict):
-      for x in v.values():
+    elif isinstance(v, dict) or issubclass(type(v), dict):
+      for x in list(v.values()):
         out = recur(x)
         if out is not None:
           return out

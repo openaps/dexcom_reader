@@ -1,14 +1,14 @@
-import crc16
-import constants
-import database_records
+from . import crc16
+from . import constants
+from . import database_records
 import datetime
 import serial
 import sys
 import time
-import packetwriter
+from . import packetwriter
 import struct
 import re
-import util
+from . import util
 import xml.etree.ElementTree as ET
 import platform
 
@@ -41,19 +41,19 @@ class Dexcom(object):
       sys.exit(1)
     else:
       dex = cls(device)
-      print ('Found %s S/N: %s'
+      print(('Found %s S/N: %s'
              % (dex.GetFirmwareHeader().get('ProductName'),
-                dex.ReadManufacturingData().get('SerialNumber')))
-      print 'Transmitter paired: %s' % dex.ReadTransmitterId()
-      print 'Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
-                                           dex.ReadBatteryLevel())
-      print 'Record count:'
-      print '- Meter records: %d' % (len(dex.ReadRecords('METER_DATA')))
-      print '- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA')))
-      print ('- CGM commitable records: %d'
-             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')])))
-      print '- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA')))
-      print '- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME')))
+                dex.ReadManufacturingData().get('SerialNumber'))))
+      print('Transmitter paired: %s' % dex.ReadTransmitterId())
+      print('Battery Status: %s (%d%%)' % (dex.ReadBatteryState(),
+                                           dex.ReadBatteryLevel()))
+      print('Record count:')
+      print('- Meter records: %d' % (len(dex.ReadRecords('METER_DATA'))))
+      print('- CGM records: %d' % (len(dex.ReadRecords('EGV_DATA'))))
+      print(('- CGM commitable records: %d'
+             % (len([not x.display_only for x in dex.ReadRecords('EGV_DATA')]))))
+      print('- Event records: %d' % (len(dex.ReadRecords('USER_EVENT_DATA'))))
+      print('- Insertion records: %d' % (len(dex.ReadRecords('INSERTION_TIME'))))
 
   def __init__(self, port):
     self._port_name = port
@@ -263,7 +263,7 @@ class Dexcom(object):
     return self.ParsePage(header, packet_data)
 
   def GenericRecordYielder(self, header, data, record_type):
-    for x in xrange(header[1]):
+    for x in range(header[1]):
       yield record_type.Create(data, x)
 
   PARSER_MAP = {
@@ -303,7 +303,7 @@ class Dexcom(object):
     start, end = page_range
     if start != end or not end:
       end += 1
-    for x in reversed(xrange(start, end)):
+    for x in reversed(range(start, end)):
       records = list(self.ReadDatabasePage(record_type, x))
       records.reverse( )
       for record in records:

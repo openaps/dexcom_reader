@@ -1,7 +1,7 @@
-import crc16
-import constants
+from . import crc16
+from . import constants
 import struct
-import util
+from . import util
 import binascii
 
 
@@ -169,7 +169,7 @@ class Calibration(GenericTimestampedRecord):
     crcdata = raw_data[calsize+offset:calsize+offset+2]
 
     subcals = [ ]
-    for i in xrange(self.numsub):
+    for i in range(self.numsub):
       offset = i * subsize
       raw_sub = subdata[offset:offset+subsize]
       sub = SubCal(raw_sub, self.data[1])
