@@ -1,9 +1,6 @@
 import datetime
-import platform
-import re
 import struct
 import sys
-import time
 from xml.etree import ElementTree as ET
 
 import serial
@@ -106,7 +103,7 @@ class Dexcom:
             local_crc = crc16.crc16(all_data, 0, total_read)
             if sent_crc != local_crc:
                 raise constants.CrcError("readpacket Failed CRC check")
-            num1 = total_read + 2
+            # num1 = total_read + 2
             return ReadPacket(command, out)
         else:
             raise constants.Error("Error reading packet header!")

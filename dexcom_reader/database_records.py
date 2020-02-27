@@ -26,7 +26,7 @@ class BaseDatabaseRecord:
     @property
     def FMT(self):
         self._CheckFormat()
-        return _ClassFormat()
+        return self._ClassFormat()
 
     @property
     def SIZE(self):
@@ -189,9 +189,9 @@ class Calibration(GenericTimestampedRecord):
         subsize = struct.calcsize(SubCal.FORMAT)
         offset = self.numsub * subsize
         calsize = struct.calcsize(self.FORMAT)
-        caldata = raw_data[:calsize]
+        # caldata = raw_data[:calsize]
         subdata = raw_data[calsize : calsize + offset]
-        crcdata = raw_data[calsize + offset : calsize + offset + 2]
+        # crcdata = raw_data[calsize + offset : calsize + offset + 2]
 
         subcals = []
         for i in range(self.numsub):

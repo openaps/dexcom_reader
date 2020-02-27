@@ -184,7 +184,7 @@ def has_powershell():
     devnull = open(os.path.devnull, "wb")
     try:
         subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
-    except:
+    except:  # noqa: E722
         return False
     finally:
         devnull.close()
@@ -204,7 +204,7 @@ def has_curl():
     devnull = open(os.path.devnull, "wb")
     try:
         subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
-    except:
+    except:  # noqa: E722
         return False
     finally:
         devnull.close()
@@ -224,7 +224,7 @@ def has_wget():
     devnull = open(os.path.devnull, "wb")
     try:
         subprocess.check_call(cmd, stdout=devnull, stderr=devnull)
-    except:
+    except:  # noqa: E722
         return False
     finally:
         devnull.close()
@@ -325,7 +325,7 @@ def _extractall(self, path=".", members=None):
     if sys.version_info < (2, 4):
 
         def sorter(dir1, dir2):
-            return cmp(dir1.name, dir2.name)
+            return cmp(dir1.name, dir2.name)  # noqa: F821
 
         directories.sort(sorter)
         directories.reverse()

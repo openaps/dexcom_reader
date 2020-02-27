@@ -40,7 +40,7 @@ class PacketWriter:
             len(x)
             for y in x:
                 self._Add(y)
-        except:
+        except:  # noqa: E722
             self._packet.append(x)
 
     def ComposePacket(self, command, payload=None):

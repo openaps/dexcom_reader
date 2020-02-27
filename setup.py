@@ -1,9 +1,5 @@
 #!/usr/bin/python
-import platform
-
 from setuptools import find_packages, setup
-
-import dexcom_reader
 
 
 def readme():

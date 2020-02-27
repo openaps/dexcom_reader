@@ -30,7 +30,7 @@ def linux_find_usbserial(vendor, product):
                     return os.path.join("/dev", option)
 
 
-def osx_find_usbserial(vendor, product):
+def osx_find_usbserial(vendor, product):  # noqa: C901
     def recur(v):
         if hasattr(v, "__iter__") and "idVendor" in v and "idProduct" in v:
             if v["idVendor"] == vendor and v["idProduct"] == product:
