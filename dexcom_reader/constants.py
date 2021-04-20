@@ -2,14 +2,14 @@ import datetime
 
 
 class Error(Exception):
-  """Base error for dexcom reader."""
+    """Base error for dexcom reader."""
 
 
 class CrcError(Error):
-  """Failed to CRC properly."""
+    """Failed to CRC properly."""
 
 
-DEXCOM_USB_VENDOR = 0x22a3
+DEXCOM_USB_VENDOR = 0x22A3
 DEXCOM_USB_PRODUCT = 0x0047
 
 BASE_TIME = datetime.datetime(2009, 1, 1)
@@ -64,31 +64,52 @@ EGV_VALUE_MASK = 1023
 EGV_DISPLAY_ONLY_MASK = 32768
 EGV_TREND_ARROW_MASK = 15
 
-BATTERY_STATES = [None, 'CHARGING', 'NOT_CHARGING', 'NTC_FAULT', 'BAD_BATTERY']
+BATTERY_STATES = [None, "CHARGING", "NOT_CHARGING", "NTC_FAULT", "BAD_BATTERY"]
 
 RECORD_TYPES = [
-  'MANUFACTURING_DATA', 'FIRMWARE_PARAMETER_DATA', 'PC_SOFTWARE_PARAMETER',
-  'SENSOR_DATA', 'EGV_DATA', 'CAL_SET', 'DEVIATION', 'INSERTION_TIME',
-  'RECEIVER_LOG_DATA', 'RECEIVER_ERROR_DATA', 'METER_DATA', 'USER_EVENT_DATA',
-  'USER_SETTING_DATA', 'MAX_VALUE',
+    "MANUFACTURING_DATA",
+    "FIRMWARE_PARAMETER_DATA",
+    "PC_SOFTWARE_PARAMETER",
+    "SENSOR_DATA",
+    "EGV_DATA",
+    "CAL_SET",
+    "DEVIATION",
+    "INSERTION_TIME",
+    "RECEIVER_LOG_DATA",
+    "RECEIVER_ERROR_DATA",
+    "METER_DATA",
+    "USER_EVENT_DATA",
+    "USER_SETTING_DATA",
+    "MAX_VALUE",
 ]
 
-TREND_ARROW_VALUES = [None, 'DOUBLE_UP', 'SINGLE_UP', '45_UP', 'FLAT',
-                      '45_DOWN', 'SINGLE_DOWN', 'DOUBLE_DOWN', 'NOT_COMPUTABLE',
-                      'OUT_OF_RANGE']
+TREND_ARROW_VALUES = [
+    None,
+    "DOUBLE_UP",
+    "SINGLE_UP",
+    "45_UP",
+    "FLAT",
+    "45_DOWN",
+    "SINGLE_DOWN",
+    "DOUBLE_DOWN",
+    "NOT_COMPUTABLE",
+    "OUT_OF_RANGE",
+]
 
-SPECIAL_GLUCOSE_VALUES = {0: None,
-                          1: 'SENSOR_NOT_ACTIVE',
-                          2: 'MINIMAL_DEVIATION',
-                          3: 'NO_ANTENNA',
-                          5: 'SENSOR_NOT_CALIBRATED',
-                          6: 'COUNTS_DEVIATION',
-                          9: 'ABSOLUTE_DEVIATION',
-                          10: 'POWER_DEVIATION',
-                          12: 'BAD_RF'}
+SPECIAL_GLUCOSE_VALUES = {
+    0: None,
+    1: "SENSOR_NOT_ACTIVE",
+    2: "MINIMAL_DEVIATION",
+    3: "NO_ANTENNA",
+    5: "SENSOR_NOT_CALIBRATED",
+    6: "COUNTS_DEVIATION",
+    9: "ABSOLUTE_DEVIATION",
+    10: "POWER_DEVIATION",
+    12: "BAD_RF",
+}
 
 
 LANGUAGES = {
-  0: None,
-  1033: 'ENGLISH',
+    0: None,
+    1033: "ENGLISH",
 }
